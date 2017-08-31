@@ -47,6 +47,7 @@ header #restartBtn {
   line-height: 42px;
   text-align: center;
   font-weight: bolder;
+  outline: none;
 }
 
 header .right {

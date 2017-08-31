@@ -19,6 +19,11 @@ var initColorMap = function() {
   cellNumberColorMap.set(64, ['#F9F6F2', '#F65E3B']);
   cellNumberColorMap.set(128, ['#F9F6F2', '#EDCF72']);
   cellNumberColorMap.set(256, ['#F9F6F2', '#FFD00A']);
+  cellNumberColorMap.set(512, ['#F9F6F2', '#9c0']);
+  cellNumberColorMap.set(1024, ['#F9F6F2', '#33b5e5']);
+  cellNumberColorMap.set(2048, ['#F9F6F2', '#09c']);
+  cellNumberColorMap.set(4096, ['#F9F6F2', '#a6c']);
+  cellNumberColorMap.set(8192, ['#F9F6F2', '#93c']);
 }
 //棋盘上是否已满
 function isTableFull() {
@@ -134,6 +139,7 @@ function saveBestScore() {
 //重新开始游戏
 function bindRestart() {
   $('#restartBtn').click(function() {
+    event.preventDefault();
     saveBestScore();
     init();
     randomShow();
@@ -156,6 +162,12 @@ function showTable() {
       let [fontColor, backgroundColor] = cellNumberColorMap.get(cellVal);
       $(cellId).css('color', fontColor);
       $(cellId).css('background', backgroundColor);
+      //设置字体大小，以免数字太大的时候超出格子范围
+      if (cellVal > 1000) {
+        $(cellId).css('font-size', '40px');
+      } else if (cellVal > 100) {
+        $(cellId).css('font-size', '50px');
+      }
       $(cellId).html(cellVal != 0 ? cellArr[i][j] : '');
     }
   }
@@ -196,12 +208,21 @@ function reverseArrByCol(arr) {
       tempArr[i][j] = arr[j][i];
     }
   }
+  tempArr.lastDir = arr.lastDir;
   return tempArr;
 }
 //单步的移动操作
-function move(arr) {
+function move(arr,direction) {
+  /*
+    添加一个参数change，代表移动后是否再增加一个随机数.
+    满足如下条件则不增加：
+    1、如果上一步操作和本次操作的移动方向相同
+    2、本次操作没有合并新数值
+  */
+  arr.change = true;
   //提取非零元素
   let nonZeroArr = getNonZeroArr(arr);
+  let nonZeroArrCp = getNonZeroArr(arr);
   //临时数组
   let tempArr = getTempArr(arr);
   /*
@@ -215,9 +236,13 @@ function move(arr) {
     for (let j = nonZeroArr[i].length - 1; j > 0; j--) {
       if (nonZeroArr[i][j] == nonZeroArr[i][j - 1]) {
         tempArr[i][j - 1] = 2 * nonZeroArr[i][j];
+        nonZeroArr[i][j-1] = 0;
         nonZeroArr[i].splice(j, 1);
       }
     }
+  }
+  if (arr.lastDir && arr.lastDir == direction && nonZeroArrCp.toString() == nonZeroArr.toString()) {
+    arr.change = false;
   }
   /*替换原有数组：
     如果非零数组单元不存在,则为0；
@@ -228,7 +253,7 @@ function move(arr) {
     for (let j = 0; j < colNum; j++) {
       if (typeof nonZeroArr[i][j] == 'undefined') {
         arr[i][j] = 0;
-      } else if (typeof tempArr[i][j] != 'undefined' && nonZeroArr[i][j]) {
+      } else if (typeof tempArr[i][j] != 'undefined') {
         arr[i][j] = tempArr[i][j];
       } else {
         arr[i][j] = nonZeroArr[i][j];
@@ -239,40 +264,49 @@ function move(arr) {
   delete tempArr;
   //展示目前得分
   $('.curScore').val(getCurScore())
+  arr.lastDir = direction;
   return arr;
 }
 //向左移动操作
 function moveLeft() {
-  cellArr = move(cellArr);
+  cellArr = move(cellArr,'left');
   showTable();
-  setTimeout("randomShow()", 300);
-  //console.log(cellArr);
+  if (cellArr.change) {
+    setTimeout(randomShow, 300);
+  }
+  //setTimeout(randomShow, 300);
 }
 //向右移动操作
 function moveRight() {
   //按行reverse数组
   let temArr = cellArr;
   temArr = reverseArrByRow(temArr);
-  temArr = move(temArr);
+  temArr = move(temArr,'right');
+  let change = temArr.change;
   //按行reverse数组
   temArr = reverseArrByRow(temArr);
   cellArr = temArr;
   showTable();
-  setTimeout("randomShow()", 300);
-  //console.log(cellArr);
+  if (change) {
+    setTimeout(randomShow, 300);
+  }
+  //setTimeout(randomShow, 300);
 }
 //向上移动操作
 function moveUp() {
   //按行reverse数组
   let temArr = cellArr;
   temArr = reverseArrByCol(temArr);
-  temArr = move(temArr);
+  temArr = move(temArr,'up');
+  let change = temArr.change;
   //按行reverse数组
   temArr = reverseArrByCol(temArr);
   cellArr = temArr;
   showTable();
-  setTimeout("randomShow()", 300);
-  //console.log(cellArr);
+  if (change) {
+    setTimeout(randomShow, 300);
+  }
+  //setTimeout(randomShow, 300);
 }
 //向右移动操作
 function moveDown() {
@@ -280,41 +314,52 @@ function moveDown() {
   let temArr = cellArr;
   temArr = reverseArrByCol(temArr);
   temArr = reverseArrByRow(temArr);
-  temArr = move(temArr);
+  temArr = move(temArr,'down');
+  let change = temArr.change;
   //按行reverse数组
   temArr = reverseArrByRow(temArr);
   temArr = reverseArrByCol(temArr);
   cellArr = temArr;
   showTable();
-  setTimeout(randomShow, 300);
-  //console.log(cellArr);
+  if (change) {
+    setTimeout(randomShow, 300);
+  }
+  //setTimeout(randomShow, 300);
+}
+//判断游戏是否结束
+function gameOver() {
+  if (isTableFull() && !moveable()) {
+    saveBestScore();
+    alert('游戏结束!')
+    return;
+  }
 }
 //绑定方向键操作事件
 function bindKeyEvent() {
   $(document).keydown(function(event) {
-    if (isTableFull() && !moveable()) {
-      saveBestScore();
-      alert('游戏结束!')
-    }
     //判断当event.keyCode 为37时（即左方面键），执行函数to_left();
     //判断当event.keyCode 为39时（即右方面键），执行函数to_right();
     if (event.keyCode == 37) {
       event.preventDefault();
+      gameOver();
       if (moveable()) {
         moveLeft();
       }
     } else if (event.keyCode == 39) {
       event.preventDefault();
+      gameOver();
       if (moveable()) {
         moveRight();
       }
     } else if (event.keyCode == 38) {
       event.preventDefault();
+      gameOver();
       if (moveable()) {
         moveUp();
       }
     } else if (event.keyCode == 40) {
       event.preventDefault();
+      gameOver();
       if (moveable()) {
         moveDown();
       }
