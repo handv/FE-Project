@@ -1,4 +1,4 @@
-自制2048小游戏
+自制2048小游戏：http://htmlpreview.github.io/?https://github.com/handv/FE-Project/blob/master/2048_my/2048game.html
 目前存在的问题，希望后续优化：
 1、变量声明有问题，不够规范
 2、代码结构比较乱，没有使用面向对象的方式
