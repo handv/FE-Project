@@ -99,7 +99,7 @@ function init() {
       $('.cell').css('background-color', 'rgba(238, 228, 218, 0.35)');
       $('#' + cellId).css('top', numberCellPadding(i));
       $('#' + cellId).css('left', numberCellPadding(j));
-
+      //初始化单元格为0
       cellArr[i][j] = 0;
     }
   }
@@ -109,9 +109,9 @@ function randomShow() {
   if (!isTableFull()) {
     let xPos = Math.floor(Math.random() * rowNum);
     let yPos = Math.floor(Math.random() * colNum);
-    let cellId = '#cell-' + xPos + '-' + yPos;
     if (cellArr[xPos][yPos] == 0) {
       cellArr[xPos][yPos] = 2;
+      let cellId = '#cell-' + xPos + '-' + yPos;
       $(cellId).html(cellArr[xPos][yPos]);
       let [fontColor, backgroundColor] = cellNumberColorMap.get(2);
       $(cellId).css('color', fontColor);
