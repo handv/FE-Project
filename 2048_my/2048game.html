@@ -1,108 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, ">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <style>
-  * {
-    margin: 0;
-    padding: 0;
-  }
-  body {
-    font-size: 14px;
-    background: #FAF8EF;
-    font-family: Arial, sans-serif;
-  }
-  .container {
-    position: relative;
-    width: 90%;
-    margin: 20px auto;
-  }
+    * {
+      margin: 0;
+      padding: 0;
+    }
 
-  .container h1 {
-    text-align: center;
-    font-weight: bold;
-    color: #776E65;
-    font-size: 74px;
-    line-height: 66px;
-  }
+    body {
+      font-size: 14px;
+      background: #FAF8EF;
+      font-family: Arial, sans-serif;
+    }
 
-  header {
-    padding: 20px 0;
-    position: relative;
-    height: 20px;
-    line-height: 20px;
-    width: 500px;
-    margin: 20px auto;
-  }
+    .container {
+      position: relative;
+      width: 100%;
+      margin: 20px auto;
+    }
 
-  header .left {
-    position: absolute;
-    left: 0;
-    padding-left: 10px;
-  }
+    .container h1 {
+      text-align: center;
+      font-weight: bold;
+      color: #776E65;
+      font-size: 74px;
+      line-height: 66px;
+    }
 
-  header #restartBtn {
-    border: none;
-    background: #8F7A66;
-    border-radius: 3px;
-    padding: 0 20px;
-    text-decoration: none;
-    color: #F9F6F2;
-    height: 40px;
-    line-height: 42px;
-    text-align: center;
-    font-weight: bolder;
-    outline: none;
-  }
+    header {
+      padding: 20px 0;
+      position: relative;
+      height: 20px;
+      line-height: 20px;
+      margin: 20px auto;
+    }
 
-  header .right {
-    position: absolute;
-    right: 0;
-    font-weight: bold;
-    text-align: center;
-    background: #8F7A66;
-    border-radius: 3px;
-  }
+    header .left {
+      position: absolute;
+      left: 0;
+    }
 
-  header .right span {
-    background: #8F7A66;
-    height: 40px;
-    line-height: 42px;
-    text-align: center;
-    font-weight: bolder;
-    padding-left: 10px;
-  }
+    header #restartBtn {
+      border: none;
+      background: #8F7A66;
+      border-radius: 3px;
+      padding: 0 20px;
+      text-decoration: none;
+      color: #F9F6F2;
+      height: 40px;
+      line-height: 42px;
+      text-align: center;
+      font-weight: bolder;
+      outline: none;
+    }
 
-  header .right input {
-    width: 40px;
-    text-align: center;
-    border: none;
-    background: #8F7A66;
-    color: white;
-  }
+    header .right {
+      position: absolute;
+      right: 0;
+      font-weight: bold;
+      text-align: center;
+      background: #8F7A66;
+      border-radius: 3px;
+    }
 
-  .table {
-    margin: 20px auto;
-    width: 500px;
-    height: 500px;
-    border-radius: 8px;
-    position: relative;
-    background: #BBADA0;
-  }
+    header .right span {
+      background: #8F7A66;
+      height: 40px;
+      line-height: 42px;
+      text-align: center;
+      font-weight: bolder;
+      padding-left: 10px;
+    }
 
-  .cell {
-    position: absolute;
-    border-radius: 8px;
-    font-weight: bolder;
-    font-size: 60px;
-    line-height: 100px;
-    text-align: center;
-  }
+    header .right input {
+      width: 40px;
+      text-align: center;
+      border: none;
+      background: #8F7A66;
+      color: white;
+    }
+
+    .table {
+      margin: 20px auto;
+      border-radius: 8px;
+      position: relative;
+      background: #BBADA0;
+    }
+
+    .cell {
+      position: absolute;
+      border-radius: 8px;
+      font-weight: bolder;
+      text-align: center;
+    }
   </style>
   <title>2048</title>
 </head>
+
 <body>
   <div class="container">
     <h1>2048</h1>
@@ -119,7 +117,413 @@
   </div>
   <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js" charset="utf-8"></script>
   <script type="text/javascript">
-  const width=100;const height=100;const margin=20;const rowNum=4;const colNum=4;let cellArr=[];const cellNumberColorMap=new Map();var initColorMap=function(){cellNumberColorMap.set(0,["#776E65","rgba(238, 228, 218, 0.35)"]);cellNumberColorMap.set(2,["#776E65","#EEE4DA"]);cellNumberColorMap.set(4,["#776E65","#EDE0C8"]);cellNumberColorMap.set(8,["#F9F6F2","#F2B179"]);cellNumberColorMap.set(16,["#F9F6F2","#F59563"]);cellNumberColorMap.set(32,["#F9F6F2","#F67C5F"]);cellNumberColorMap.set(64,["#F9F6F2","#F65E3B"]);cellNumberColorMap.set(128,["#F9F6F2","#EDCF72"]);cellNumberColorMap.set(256,["#F9F6F2","#FFD00A"]);cellNumberColorMap.set(512,["#F9F6F2","#9c0"]);cellNumberColorMap.set(1024,["#F9F6F2","#33b5e5"]);cellNumberColorMap.set(2048,["#F9F6F2","#09c"]);cellNumberColorMap.set(4096,["#F9F6F2","#a6c"]);cellNumberColorMap.set(8192,["#F9F6F2","#93c"])};function isTableFull(){for(let i=0;i<rowNum;i++){for(let j=0;j<colNum;j++){if(cellArr[i][j]==0){return false}}}return true}function isNeighborSame(){for(let i=0;i<rowNum;i++){for(let j=0;j<colNum-1;j++){if(cellArr[i][j]==cellArr[i][j+1]){return true}}}for(let i=0;i<rowNum-1;i++){for(let j=0;j<colNum;j++){if(cellArr[i][j]==cellArr[i+1][j]){return true}}}return false}function moveable(){if(!isTableFull()||isNeighborSame()){return true}return false}function numberCellPadding(a){return(width+margin)*a+margin}function initTable(){$(".table").children().remove();let tableWidth=(width+margin)*rowNum+margin;let tableHeight=(height+margin)*colNum+margin;$(".table").width(tableWidth);$(".table").height(tableHeight)}function loadBestScore(){if(localStorage.bestScoreOf2048Game==undefined){localStorage.bestScoreOf2048Game=0}return localStorage.bestScoreOf2048Game}function init(){initTable();initColorMap();$(".curScore").val(0);$(".bestScore").val(loadBestScore());for(let i=0;i<rowNum;i++){cellArr[i]=[];for(let j=0;j<colNum;j++){let cellId="cell-"+i+"-"+j;let cell='<div class="cell" id='+cellId+"></div>";$(".table").append($(cell));$(".cell").css("width",width);$(".cell").css("height",height);$(".cell").css("background-color","rgba(238, 228, 218, 0.35)");$("#"+cellId).css("top",numberCellPadding(i));$("#"+cellId).css("left",numberCellPadding(j));cellArr[i][j]=0}}}function randomShow(){if(!isTableFull()){let xPos=Math.floor(Math.random()*rowNum);let yPos=Math.floor(Math.random()*colNum);let cellId="#cell-"+xPos+"-"+yPos;if(cellArr[xPos][yPos]==0){cellArr[xPos][yPos]=2;$(cellId).html(cellArr[xPos][yPos]);let [fontColor,backgroundColor]=cellNumberColorMap.get(2);$(cellId).css("color",fontColor);$(cellId).css("background",backgroundColor)}else{randomShow()}}}function getCurScore(){let ta=cellArr.join(",").split(",");let maxScore=Math.max.apply(null,ta);return maxScore}function saveBestScore(){let curScore=parseInt($(".curScore").val());let bestScore=parseInt(localStorage.bestScoreOf2048Game);if(curScore>bestScore){$(".bestScore").val(curScore);localStorage.bestScoreOf2048Game=curScore}}function bindRestart(){$("#restartBtn").click(function(){event.preventDefault();saveBestScore();init();randomShow();randomShow()})}function bindUnload(){window.addEventListener("unload",function(a){saveBestScore()})}function showTable(){for(let i=0;i<rowNum;i++){for(let j=0;j<colNum;j++){let cellId="#cell-"+i+"-"+j;let cellVal=parseInt(cellArr[i][j]);let [fontColor,backgroundColor]=cellNumberColorMap.get(cellVal);$(cellId).css("color",fontColor);$(cellId).css("background",backgroundColor);if(cellVal>1000){$(cellId).css("font-size","40px")}else{if(cellVal>100){$(cellId).css("font-size","50px")}}$(cellId).html(cellVal!=0?cellArr[i][j]:"")}}}function getNonZeroArr(a){let nonZero=[];for(let i=0;i<a.length;i++){nonZero[i]=[];for(let j=0;j<a[i].length;j++){if(a[i][j]!=0){nonZero[i].push(a[i][j])}}}return nonZero}function getTempArr(a){let temp=[];for(let i=0;i<a.length;i++){temp[i]=[]}return temp}function reverseArrByRow(a){for(let i=0;i<a.length;i++){a[i].reverse()}return a}function reverseArrByCol(a){let tempArr=getTempArr(a);for(let i=0;i<a.length;i++){for(let j=0;j<a[i].length;j++){tempArr[i][j]=a[j][i]}}tempArr.lastDir=a.lastDir;return tempArr}function move(a,b){a.change=true;let nonZeroArr=getNonZeroArr(a);let nonZeroArrCp=getNonZeroArr(a);let tempArr=getTempArr(a);for(let i=0;i<nonZeroArr.length;i++){for(let j=nonZeroArr[i].length-1;j>0;j--){if(nonZeroArr[i][j]==nonZeroArr[i][j-1]){tempArr[i][j-1]=2*nonZeroArr[i][j];nonZeroArr[i][j-1]=0;nonZeroArr[i].splice(j,1)}}}if(a.lastDir&&a.lastDir==b&&nonZeroArrCp.toString()==nonZeroArr.toString()){a.change=false}for(let i=0;i<rowNum;i++){for(let j=0;j<colNum;j++){if(typeof nonZeroArr[i][j]=="undefined"){a[i][j]=0}else{if(typeof tempArr[i][j]!="undefined"){a[i][j]=tempArr[i][j]}else{a[i][j]=nonZeroArr[i][j]}}}}delete nonZeroArr;delete tempArr;$(".curScore").val(getCurScore());a.lastDir=b;return a}function moveLeft(){cellArr=move(cellArr,"left");showTable();if(cellArr.change){setTimeout(randomShow,300)}}function moveRight(){let temArr=cellArr;temArr=reverseArrByRow(temArr);temArr=move(temArr,"right");let change=temArr.change;temArr=reverseArrByRow(temArr);cellArr=temArr;showTable();if(change){setTimeout(randomShow,300)}}function moveUp(){let temArr=cellArr;temArr=reverseArrByCol(temArr);temArr=move(temArr,"up");let change=temArr.change;temArr=reverseArrByCol(temArr);cellArr=temArr;showTable();if(change){setTimeout(randomShow,300)}}function moveDown(){let temArr=cellArr;temArr=reverseArrByCol(temArr);temArr=reverseArrByRow(temArr);temArr=move(temArr,"down");let change=temArr.change;temArr=reverseArrByRow(temArr);temArr=reverseArrByCol(temArr);cellArr=temArr;showTable();if(change){setTimeout(randomShow,300)}}function gameOver(){if(isTableFull()&&!moveable()){saveBestScore();alert("游戏结束!");return}}function bindKeyEvent(){$(document).keydown(function(a){if(a.keyCode==37){a.preventDefault();gameOver();if(moveable()){moveLeft()}}else{if(a.keyCode==39){a.preventDefault();gameOver();if(moveable()){moveRight()}}else{if(a.keyCode==38){a.preventDefault();gameOver();if(moveable()){moveUp()}}else{if(a.keyCode==40){a.preventDefault();gameOver();if(moveable()){moveDown()}}}}}})}function bindEvents(){bindRestart();bindKeyEvent();bindUnload()}function __main(){init();randomShow();randomShow();bindEvents()}$(function(){__main()});
+    let width = 0;
+    let height = 0;
+    let margin = 0;
+    //width和margin的比例
+    const scale = 5;
+    const rowNum = 4;
+    const colNum = 4;
+
+    let cellArr = [];
+    const cellNumberColorMap = new Map();
+    //数字与字体和背景颜色映射表
+    var initColorMap = function() {
+      //(key, value) = (number,   [css.color, css.background-color])
+      cellNumberColorMap.set(0, ['#776E65', 'rgba(238, 228, 218, 0.35)']);
+      cellNumberColorMap.set(2, ['#776E65', '#EEE4DA']);
+      cellNumberColorMap.set(4, ['#776E65', '#EDE0C8']);
+      cellNumberColorMap.set(8, ['#F9F6F2', '#F2B179']);
+      cellNumberColorMap.set(16, ['#F9F6F2', '#F59563']);
+      cellNumberColorMap.set(32, ['#F9F6F2', '#F67C5F']);
+      cellNumberColorMap.set(64, ['#F9F6F2', '#F65E3B']);
+      cellNumberColorMap.set(128, ['#F9F6F2', '#EDCF72']);
+      cellNumberColorMap.set(256, ['#F9F6F2', '#FFD00A']);
+      cellNumberColorMap.set(512, ['#F9F6F2', '#9c0']);
+      cellNumberColorMap.set(1024, ['#F9F6F2', '#33b5e5']);
+      cellNumberColorMap.set(2048, ['#F9F6F2', '#09c']);
+      cellNumberColorMap.set(4096, ['#F9F6F2', '#a6c']);
+      cellNumberColorMap.set(8192, ['#F9F6F2', '#93c']);
+    }
+    //获取单元格margin值
+    function getCellMargin() {
+      let screenWidth = window.screen.availWidth;
+      if (screenWidth > 1000) {
+        margin = 20;
+      } else {
+        margin = screenWidth * 0.9 / (scale + 1) / rowNum;
+      }
+      return margin;
+    }
+    //设置屏幕的单元格宽度,margin值
+    function initTableCss() {
+      margin = getCellMargin();
+      width = margin * scale;
+      height = width;
+    }
+    //棋盘上是否已满
+    function isTableFull() {
+      for (let i = 0; i < rowNum; i++) {
+        for (let j = 0; j < colNum; j++) {
+          if (cellArr[i][j] == 0) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    //是否存在相同元素
+    function isNeighborSame() {
+      for (let i = 0; i < rowNum; i++) {
+        for (let j = 0; j < colNum - 1; j++) {
+          if (cellArr[i][j] == cellArr[i][j + 1]) {
+            return true;
+          }
+        }
+      }
+      for (let i = 0; i < rowNum - 1; i++) {
+        for (let j = 0; j < colNum; j++) {
+          if (cellArr[i][j] == cellArr[i + 1][j]) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    //是否可以移动
+    function moveable() {
+      if (!isTableFull() || isNeighborSame()) {
+        return true;
+      }
+      return false;
+    }
+    // 格子的位置偏移量，使用绝对坐标
+    function numberCellPadding(x) {
+      return (width + margin) * x + margin;
+    }
+    // 格子棋盘初始化
+    function initTable() {
+      initTableCss();
+      //删除所有子元素
+      $('.table').children().remove();
+      let tableWidth = (width + margin) * rowNum + margin;
+      let tableHeight = (height + margin) * colNum + margin;
+      $('.table').width(tableWidth);
+      $('.table').height(tableHeight);
+      $('header').width(tableWidth);
+    }
+    //载入最佳成绩，使用localStorage本地缓存
+    function loadBestScore() {
+      if (localStorage.bestScoreOf2048Game == undefined) {
+        localStorage.bestScoreOf2048Game = 0;
+      }
+      return localStorage.bestScoreOf2048Game;
+    }
+    // 棋盘内容初始化
+    function init() {
+      initTable();
+      initColorMap();
+      //成绩初始化为0
+      $('.curScore').val(0);
+      $('.bestScore').val(loadBestScore());
+      for (let i = 0; i < rowNum; i++) {
+        cellArr[i] = [];
+        for (let j = 0; j < colNum; j++) {
+          let cellId = 'cell-' + i + '-' + j;
+          let cell = '<div class="cell" id=' + cellId + '></div>';
+          $('.table').append($(cell));
+          $('.cell').css('width', width);
+          $('.cell').css('height', height);
+          $('.cell').css('background-color', 'rgba(238, 228, 218, 0.35)');
+          $('.cell').css('line-height', width + 'px');
+          $('.cell').css('font-size', width * 0.6);
+          $('#' + cellId).css('top', numberCellPadding(i));
+          $('#' + cellId).css('left', numberCellPadding(j));
+
+          cellArr[i][j] = 0;
+        }
+      }
+    }
+    //随机生成一个2
+    function randomShow() {
+      if (!isTableFull()) {
+        let xPos = Math.floor(Math.random() * rowNum);
+        let yPos = Math.floor(Math.random() * colNum);
+        let cellId = '#cell-' + xPos + '-' + yPos;
+        if (cellArr[xPos][yPos] == 0) {
+          cellArr[xPos][yPos] = 2;
+          $(cellId).html(cellArr[xPos][yPos]);
+          let [fontColor, backgroundColor] = cellNumberColorMap.get(2);
+          $(cellId).css('color', fontColor);
+          $(cellId).css('background', backgroundColor);
+        } else {
+          randomShow();
+        }
+      }
+    }
+    //获取成绩
+    function getCurScore() {
+      let ta = cellArr.join(",").split(","); //转化为一维数组
+      let maxScore = Math.max.apply(null, ta); //最大值
+      return maxScore;
+    }
+    //保存最好成绩
+    function saveBestScore() {
+      let curScore = parseInt($('.curScore').val());
+      let bestScore = parseInt(localStorage.bestScoreOf2048Game);
+      if (curScore > bestScore) {
+        $('.bestScore').val(curScore);
+        localStorage.bestScoreOf2048Game = curScore;
+      }
+    }
+    //重新开始游戏
+    function bindRestart() {
+      $('#restartBtn').click(function() {
+        event.preventDefault();
+        saveBestScore();
+        init();
+        randomShow();
+        randomShow();
+      });
+    }
+    //网页重载时保存成绩
+    //unload方法在浏览器刷新或关闭时调用
+    function bindUnload() {
+      window.addEventListener('unload', function(event) {
+        saveBestScore();
+      })
+    }
+    //重新展示table
+    function showTable() {
+      for (let i = 0; i < rowNum; i++) {
+        for (let j = 0; j < colNum; j++) {
+          let cellId = '#cell-' + i + '-' + j;
+          let cellVal = parseInt(cellArr[i][j]);
+          let [fontColor, backgroundColor] = cellNumberColorMap.get(cellVal);
+          $(cellId).css('color', fontColor);
+          $(cellId).css('background', backgroundColor);
+          //设置字体大小，以免数字太大的时候超出格子范围
+          if (cellVal > 1000) {
+            $(cellId).css('font-size', width * 0.55);
+          } else if (cellVal > 100) {
+            $(cellId).css('font-size', width * 0.5);
+          }
+          $(cellId).html(cellVal != 0 ? cellArr[i][j] : '');
+        }
+      }
+    }
+    //提取非零元素数组
+    function getNonZeroArr(arr) {
+      let nonZero = [];
+      for (let i = 0; i < arr.length; i++) {
+        nonZero[i] = [];
+        for (let j = 0; j < arr[i].length; j++) {
+          if (arr[i][j] != 0) {
+            nonZero[i].push(arr[i][j]);
+          }
+        }
+      }
+      return nonZero;
+    }
+    //获取临时数组
+    function getTempArr(arr) {
+      let temp = [];
+      for (let i = 0; i < arr.length; i++) {
+        temp[i] = [];
+      }
+      return temp;
+    }
+    //按行反转数组
+    function reverseArrByRow(arr) {
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].reverse();
+      }
+      return arr;
+    }
+    //列变行
+    function reverseArrByCol(arr) {
+      let tempArr = getTempArr(arr);
+      for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr[i].length; j++) {
+          tempArr[i][j] = arr[j][i];
+        }
+      }
+      tempArr.lastDir = arr.lastDir;
+      return tempArr;
+    }
+    //单步的移动操作
+    function move(arr, direction) {
+      /*
+        添加一个参数change，代表移动后是否再增加一个随机数.
+        满足如下条件则不增加：
+        1、如果上一步操作和本次操作的移动方向相同
+        2、本次操作没有合并新数值
+      */
+      arr.change = true;
+      //提取非零元素
+      let nonZeroArr = getNonZeroArr(arr);
+      let nonZeroArrCp = getNonZeroArr(arr);
+      //临时数组
+      let tempArr = getTempArr(arr);
+      /*
+        移动策略：
+        1、提取非零数组
+        2、按行提取；
+        3、从后往前，每一行的每一列与前一列比较：
+        如果相同，则删除该列，前一列不变，但临时数组的前一列加倍；
+      */
+      for (let i = 0; i < nonZeroArr.length; i++) {
+        for (let j = nonZeroArr[i].length - 1; j > 0; j--) {
+          if (nonZeroArr[i][j] == nonZeroArr[i][j - 1]) {
+            tempArr[i][j - 1] = 2 * nonZeroArr[i][j];
+            nonZeroArr[i][j - 1] = 0;
+            nonZeroArr[i].splice(j, 1);
+          }
+        }
+      }
+      if (arr.lastDir && arr.lastDir == direction && nonZeroArrCp.toString() == nonZeroArr.toString()) {
+        arr.change = false;
+      }
+      /*替换原有数组：
+        如果非零数组单元不存在,则为0；
+        如果临时数组存在，则为临时数组值；
+        如果非零数组单元存在，则为临时数组单元
+      */
+      for (let i = 0; i < rowNum; i++) {
+        for (let j = 0; j < colNum; j++) {
+          if (typeof nonZeroArr[i][j] == 'undefined') {
+            arr[i][j] = 0;
+          } else if (typeof tempArr[i][j] != 'undefined') {
+            arr[i][j] = tempArr[i][j];
+          } else {
+            arr[i][j] = nonZeroArr[i][j];
+          }
+        }
+      }
+      delete nonZeroArr;
+      delete tempArr;
+      //展示目前得分
+      $('.curScore').val(getCurScore())
+      arr.lastDir = direction;
+      return arr;
+    }
+    //向左移动操作
+    function moveLeft() {
+      cellArr = move(cellArr, 'left');
+      showTable();
+      if (cellArr.change) {
+        setTimeout(randomShow, 300);
+      }
+      //setTimeout(randomShow, 300);
+    }
+    //向右移动操作
+    function moveRight() {
+      //按行reverse数组
+      let temArr = cellArr;
+      temArr = reverseArrByRow(temArr);
+      temArr = move(temArr, 'right');
+      let change = temArr.change;
+      //按行reverse数组
+      temArr = reverseArrByRow(temArr);
+      cellArr = temArr;
+      showTable();
+      if (change) {
+        setTimeout(randomShow, 300);
+      }
+      //setTimeout(randomShow, 300);
+    }
+    //向上移动操作
+    function moveUp() {
+      //按行reverse数组
+      let temArr = cellArr;
+      temArr = reverseArrByCol(temArr);
+      temArr = move(temArr, 'up');
+      let change = temArr.change;
+      //按行reverse数组
+      temArr = reverseArrByCol(temArr);
+      cellArr = temArr;
+      showTable();
+      if (change) {
+        setTimeout(randomShow, 300);
+      }
+      //setTimeout(randomShow, 300);
+    }
+    //向右移动操作
+    function moveDown() {
+      //按行reverse数组
+      let temArr = cellArr;
+      temArr = reverseArrByCol(temArr);
+      temArr = reverseArrByRow(temArr);
+      temArr = move(temArr, 'down');
+      let change = temArr.change;
+      //按行reverse数组
+      temArr = reverseArrByRow(temArr);
+      temArr = reverseArrByCol(temArr);
+      cellArr = temArr;
+      showTable();
+      if (change) {
+        setTimeout(randomShow, 300);
+      }
+      //setTimeout(randomShow, 300);
+    }
+    //判断游戏是否结束
+    function gameOver() {
+      if (isTableFull() && !moveable()) {
+        saveBestScore();
+        alert('游戏结束!')
+        return;
+      }
+    }
+    //绑定方向键操作事件
+    function bindKeyEvent() {
+      $(document).keydown(function(event) {
+        //判断当event.keyCode 为37时（即左方面键），执行函数to_left();
+        //判断当event.keyCode 为39时（即右方面键），执行函数to_right();
+        if (event.keyCode == 37) {
+          event.preventDefault();
+          gameOver();
+          if (moveable()) {
+            moveLeft();
+          }
+        } else if (event.keyCode == 39) {
+          event.preventDefault();
+          gameOver();
+          if (moveable()) {
+            moveRight();
+          }
+        } else if (event.keyCode == 38) {
+          event.preventDefault();
+          gameOver();
+          if (moveable()) {
+            moveUp();
+          }
+        } else if (event.keyCode == 40) {
+          event.preventDefault();
+          gameOver();
+          if (moveable()) {
+            moveDown();
+          }
+        }
+      });
+    }
+    //绑定事件
+    function bindEvents() {
+      bindRestart();
+      bindKeyEvent();
+      bindUnload();
+    }
+    //主函数
+    function __main() {
+      init();
+      randomShow();
+      randomShow();
+      bindEvents();
+    }
+
+    $(function() {
+      __main();
+    });
   </script>
 </body>
+
 </html>
