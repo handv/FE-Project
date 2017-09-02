@@ -1,9 +1,14 @@
-const width = 100;
-const height = 100;
-const margin = 20;
-
+let width = 0;
+let height = 0;
+let margin = 0;
+//width和margin的比例
+const scale = 5;
+//单元格行数，列数
 const rowNum = 4;
 const colNum = 4;
+//触碰点坐标
+let startX = 0;
+let startY = 0;
 
 let cellArr = [];
 const cellNumberColorMap = new Map();
@@ -24,6 +29,23 @@ var initColorMap = function() {
   cellNumberColorMap.set(2048, ['#F9F6F2', '#09c']);
   cellNumberColorMap.set(4096, ['#F9F6F2', '#a6c']);
   cellNumberColorMap.set(8192, ['#F9F6F2', '#93c']);
+}
+//获取单元格margin值
+function getCellMargin() {
+  //获取屏幕大小
+  let screenWidth = window.screen.availWidth;
+  if (screenWidth > 1000) {
+    margin = 20;
+  } else {
+    margin = screenWidth * 0.9 / (scale + 1) / rowNum;
+  }
+  return margin;
+}
+//设置屏幕的单元格宽度,margin值
+function initTableCss() {
+  margin = getCellMargin();
+  width = margin * scale;
+  height = width;
 }
 //棋盘上是否已满
 function isTableFull() {
@@ -67,12 +89,14 @@ function numberCellPadding(x) {
 }
 // 格子棋盘初始化
 function initTable() {
+  initTableCss();
   //删除所有子元素
   $('.table').children().remove();
   let tableWidth = (width + margin) * rowNum + margin;
   let tableHeight = (height + margin) * colNum + margin;
   $('.table').width(tableWidth);
   $('.table').height(tableHeight);
+  $('header').width(tableWidth);
 }
 //载入最佳成绩，使用localStorage本地缓存
 function loadBestScore() {
@@ -97,9 +121,10 @@ function init() {
       $('.cell').css('width', width);
       $('.cell').css('height', height);
       $('.cell').css('background-color', 'rgba(238, 228, 218, 0.35)');
+      $('.cell').css('line-height', width + 'px');
+      $('.cell').css('font-size', width * 0.6);
       $('#' + cellId).css('top', numberCellPadding(i));
       $('#' + cellId).css('left', numberCellPadding(j));
-      //初始化单元格为0
       cellArr[i][j] = 0;
     }
   }
@@ -109,9 +134,9 @@ function randomShow() {
   if (!isTableFull()) {
     let xPos = Math.floor(Math.random() * rowNum);
     let yPos = Math.floor(Math.random() * colNum);
+    let cellId = '#cell-' + xPos + '-' + yPos;
     if (cellArr[xPos][yPos] == 0) {
       cellArr[xPos][yPos] = 2;
-      let cellId = '#cell-' + xPos + '-' + yPos;
       $(cellId).html(cellArr[xPos][yPos]);
       let [fontColor, backgroundColor] = cellNumberColorMap.get(2);
       $(cellId).css('color', fontColor);
@@ -159,14 +184,18 @@ function showTable() {
     for (let j = 0; j < colNum; j++) {
       let cellId = '#cell-' + i + '-' + j;
       let cellVal = parseInt(cellArr[i][j]);
-      let [fontColor, backgroundColor] = cellNumberColorMap.get(cellVal);
+      let cellVal1 = cellVal;
+      if (cellVal > 8192) {
+        cellVal1 = 8192;
+      }
+      let [fontColor, backgroundColor] = cellNumberColorMap.get(cellVal1);
       $(cellId).css('color', fontColor);
       $(cellId).css('background', backgroundColor);
       //设置字体大小，以免数字太大的时候超出格子范围
       if (cellVal > 1000) {
-        $(cellId).css('font-size', '40px');
+        $(cellId).css('font-size', width * 0.55);
       } else if (cellVal > 100) {
-        $(cellId).css('font-size', '50px');
+        $(cellId).css('font-size', width * 0.5);
       }
       $(cellId).html(cellVal != 0 ? cellArr[i][j] : '');
     }
@@ -212,7 +241,7 @@ function reverseArrByCol(arr) {
   return tempArr;
 }
 //单步的移动操作
-function move(arr,direction) {
+function move(arr, direction) {
   /*
     添加一个参数change，代表移动后是否再增加一个随机数.
     满足如下条件则不增加：
@@ -223,20 +252,18 @@ function move(arr,direction) {
   //提取非零元素
   let nonZeroArr = getNonZeroArr(arr);
   let nonZeroArrCp = getNonZeroArr(arr);
-  //临时数组
-  let tempArr = getTempArr(arr);
   /*
     移动策略：
     1、提取非零数组
     2、按行提取；
-    3、从后往前，每一行的每一列与前一列比较：
+    3、从头往后，每一行的每一列与前一列比较：
     如果相同，则删除该列，前一列不变，但临时数组的前一列加倍；
   */
   for (let i = 0; i < nonZeroArr.length; i++) {
-    for (let j = nonZeroArr[i].length - 1; j > 0; j--) {
+    for (let j = 1; j < nonZeroArr[i].length; j++) {
       if (nonZeroArr[i][j] == nonZeroArr[i][j - 1]) {
-        tempArr[i][j - 1] = 2 * nonZeroArr[i][j];
-        nonZeroArr[i][j-1] = 0;
+        nonZeroArr[i][j - 1] = 2 * nonZeroArr[i][j];
+        //nonZeroArr[i][j - 1] = 0;
         nonZeroArr[i].splice(j, 1);
       }
     }
@@ -246,22 +273,18 @@ function move(arr,direction) {
   }
   /*替换原有数组：
     如果非零数组单元不存在,则为0；
-    如果临时数组存在，则为临时数组值；
-    如果非零数组单元存在，则为临时数组单元
+    如果非零数组单元存在，则为非零数组单元
   */
   for (let i = 0; i < rowNum; i++) {
     for (let j = 0; j < colNum; j++) {
       if (typeof nonZeroArr[i][j] == 'undefined') {
         arr[i][j] = 0;
-      } else if (typeof tempArr[i][j] != 'undefined') {
-        arr[i][j] = tempArr[i][j];
       } else {
         arr[i][j] = nonZeroArr[i][j];
       }
     }
   }
   delete nonZeroArr;
-  delete tempArr;
   //展示目前得分
   $('.curScore').val(getCurScore())
   arr.lastDir = direction;
@@ -269,19 +292,18 @@ function move(arr,direction) {
 }
 //向左移动操作
 function moveLeft() {
-  cellArr = move(cellArr,'left');
+  cellArr = move(cellArr, 'left');
   showTable();
   if (cellArr.change) {
     setTimeout(randomShow, 300);
   }
-  //setTimeout(randomShow, 300);
 }
 //向右移动操作
 function moveRight() {
   //按行reverse数组
   let temArr = cellArr;
   temArr = reverseArrByRow(temArr);
-  temArr = move(temArr,'right');
+  temArr = move(temArr, 'right');
   let change = temArr.change;
   //按行reverse数组
   temArr = reverseArrByRow(temArr);
@@ -290,14 +312,13 @@ function moveRight() {
   if (change) {
     setTimeout(randomShow, 300);
   }
-  //setTimeout(randomShow, 300);
 }
 //向上移动操作
 function moveUp() {
   //按行reverse数组
   let temArr = cellArr;
   temArr = reverseArrByCol(temArr);
-  temArr = move(temArr,'up');
+  temArr = move(temArr, 'up');
   let change = temArr.change;
   //按行reverse数组
   temArr = reverseArrByCol(temArr);
@@ -306,7 +327,6 @@ function moveUp() {
   if (change) {
     setTimeout(randomShow, 300);
   }
-  //setTimeout(randomShow, 300);
 }
 //向右移动操作
 function moveDown() {
@@ -314,7 +334,7 @@ function moveDown() {
   let temArr = cellArr;
   temArr = reverseArrByCol(temArr);
   temArr = reverseArrByRow(temArr);
-  temArr = move(temArr,'down');
+  temArr = move(temArr, 'down');
   let change = temArr.change;
   //按行reverse数组
   temArr = reverseArrByRow(temArr);
@@ -324,7 +344,14 @@ function moveDown() {
   if (change) {
     setTimeout(randomShow, 300);
   }
-  //setTimeout(randomShow, 300);
+}
+//移动操作
+function moveDirection(event, moveFunc) {
+  event.preventDefault();
+  gameOver();
+  if (moveable()) {
+    moveFunc();
+  }
 }
 //判断游戏是否结束
 function gameOver() {
@@ -334,42 +361,96 @@ function gameOver() {
     return;
   }
 }
+
 //绑定方向键操作事件
 function bindKeyEvent() {
   $(document).keydown(function(event) {
     //判断当event.keyCode 为37时（即左方面键），执行函数to_left();
     //判断当event.keyCode 为39时（即右方面键），执行函数to_right();
     if (event.keyCode == 37) {
-      event.preventDefault();
-      gameOver();
-      if (moveable()) {
-        moveLeft();
-      }
+      moveDirection(event, moveLeft);
     } else if (event.keyCode == 39) {
-      event.preventDefault();
-      gameOver();
-      if (moveable()) {
-        moveRight();
-      }
+      moveDirection(event, moveRight);
     } else if (event.keyCode == 38) {
-      event.preventDefault();
-      gameOver();
-      if (moveable()) {
-        moveUp();
-      }
+      moveDirection(event, moveUp);
     } else if (event.keyCode == 40) {
-      event.preventDefault();
-      gameOver();
-      if (moveable()) {
-        moveDown();
-      }
+      moveDirection(event, moveDown);
     }
   });
+}
+//设置滑动距离标值：如果滑动小于该值，则表示非滑动，只是触碰屏幕
+function getSlideLength() {
+  //获取屏幕大小
+  return window.screen.availWidth * 0.05;
+}
+//touchstart事件
+function touchSatrtFunc(evt) {
+  try {
+    evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等
+    let touch = evt.touches[0]; //获取第一个触点
+    let x = Number(touch.pageX); //页面触点X坐标
+    let y = Number(touch.pageY); //页面触点Y坐标
+    //记录触点初始位置
+    startX = x;
+    startY = y;
+  } catch (e) {
+    //alert('touchSatrtFunc：' + e.message);
+  }
+}
+
+//touchmove事件，这个事件无法获取坐标
+function touchMoveFunc(evt) {
+  try {
+    evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等
+  } catch (e) {
+    //alert('touchEndFunc：' + e.message);
+  }
+}
+//touchend事件
+function touchEndFunc(evt) {
+  try {
+    evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等
+    let slideLength = getSlideLength();
+    /*
+      注意与touchSatrtFunc的区别：
+      touchSatrtFunc使用的是evt.touches[0]
+      touchEndFunc使用的是evt.changedTouches[0]
+    */
+    let touch = evt.changedTouches[0]; //获取第一个触点
+    let endX = Number(touch.pageX); //页面触点X坐标
+    let endY = Number(touch.pageY); //页面触点Y坐标
+    //判断滑动方向
+    let deltaX = endX - startX;
+    let deltaY = endY - startY;
+    if (Math.abs(deltaX) >= Math.abs(deltaY) && Math.abs(deltaX) > slideLength) {
+      if (deltaX > 0) {
+        moveDirection(evt, moveRight);
+      } else {
+        moveDirection(evt, moveLeft);
+      }
+    } else if (Math.abs(deltaX) < Math.abs(deltaY) && Math.abs(deltaY) > slideLength) {
+      if (deltaY > 0) {
+        moveDirection(evt, moveDown);
+      } else {
+        moveDirection(evt, moveUp);
+      }
+    }
+  } catch (e) {
+    //alert('touchMoveFunc：' + e.message);
+  }
+}
+
+//绑定移动端滑动操作
+function bindTouchMove() {
+  document.addEventListener('touchstart', touchSatrtFunc, false);
+  document.addEventListener('touchmove', touchMoveFunc, false);
+  document.addEventListener('touchend', touchEndFunc, false);
 }
 //绑定事件
 function bindEvents() {
   bindRestart();
   bindKeyEvent();
+  bindTouchMove();
   bindUnload();
 }
 //主函数

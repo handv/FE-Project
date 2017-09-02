@@ -2,14 +2,16 @@
   margin: 0;
   padding: 0;
 }
+
 body {
   font-size: 14px;
   background: #FAF8EF;
   font-family: Arial, sans-serif;
 }
+
 .container {
   position: relative;
-  width: 90%;
+  width: 100%;
   margin: 20px auto;
 }
 
@@ -26,14 +28,12 @@ header {
   position: relative;
   height: 20px;
   line-height: 20px;
-  width: 500px;
   margin: 20px auto;
 }
 
 header .left {
   position: absolute;
   left: 0;
-  padding-left: 10px;
 }
 
 header #restartBtn {
@@ -78,8 +78,6 @@ header .right input {
 
 .table {
   margin: 20px auto;
-  width: 500px;
-  height: 500px;
   border-radius: 8px;
   position: relative;
   background: #BBADA0;
@@ -89,7 +87,5 @@ header .right input {
   position: absolute;
   border-radius: 8px;
   font-weight: bolder;
-  font-size: 60px;
-  line-height: 100px;
   text-align: center;
 }
