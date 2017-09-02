@@ -122,8 +122,12 @@
     let margin = 0;
     //width和margin的比例
     const scale = 5;
+    //单元格行数，列数
     const rowNum = 4;
     const colNum = 4;
+    //触碰点坐标
+    let startX = 0;
+    let startY = 0;
 
     let cellArr = [];
     const cellNumberColorMap = new Map();
@@ -147,6 +151,7 @@
     }
     //获取单元格margin值
     function getCellMargin() {
+      //获取屏幕大小
       let screenWidth = window.screen.availWidth;
       if (screenWidth > 1000) {
         margin = 20;
@@ -466,6 +471,14 @@
       }
       //setTimeout(randomShow, 300);
     }
+    //移动操作
+    function moveDirection(event, moveFunc) {
+      event.preventDefault();
+      gameOver();
+      if (moveable()) {
+        moveFunc();
+      }
+    }
     //判断游戏是否结束
     function gameOver() {
       if (isTableFull() && !moveable()) {
@@ -474,42 +487,96 @@
         return;
       }
     }
+
     //绑定方向键操作事件
     function bindKeyEvent() {
       $(document).keydown(function(event) {
         //判断当event.keyCode 为37时（即左方面键），执行函数to_left();
         //判断当event.keyCode 为39时（即右方面键），执行函数to_right();
         if (event.keyCode == 37) {
-          event.preventDefault();
-          gameOver();
-          if (moveable()) {
-            moveLeft();
-          }
+          moveDirection(event, moveLeft);
         } else if (event.keyCode == 39) {
-          event.preventDefault();
-          gameOver();
-          if (moveable()) {
-            moveRight();
-          }
+          moveDirection(event, moveRight);
         } else if (event.keyCode == 38) {
-          event.preventDefault();
-          gameOver();
-          if (moveable()) {
-            moveUp();
-          }
+          moveDirection(event, moveUp);
         } else if (event.keyCode == 40) {
-          event.preventDefault();
-          gameOver();
-          if (moveable()) {
-            moveDown();
-          }
+          moveDirection(event, moveDown);
         }
       });
+    }
+    //设置滑动距离标值：如果滑动小于该值，则表示非滑动，只是触碰屏幕
+    function getSlideLength() {
+        //获取屏幕大小
+        return  window.screen.availWidth * 0.05;
+    }
+    //touchstart事件
+    function touchSatrtFunc(evt) {
+      try {
+        //evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等
+        let touch = evt.touches[0]; //获取第一个触点
+        let x = Number(touch.pageX); //页面触点X坐标
+        let y = Number(touch.pageY); //页面触点Y坐标
+        //记录触点初始位置
+        startX = x;
+        startY = y;
+      } catch (e) {
+        //alert('touchSatrtFunc：' + e.message);
+      }
+    }
+
+    //touchmove事件，这个事件无法获取坐标
+    function touchMoveFunc(evt) {
+      try {
+        evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等
+      } catch (e) {
+        //alert('touchEndFunc：' + e.message);
+      }
+    }
+    //touchend事件
+    function touchEndFunc(evt) {
+      try {
+        //evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等
+        let slideLength = getSlideLength();
+        /*
+          注意与touchSatrtFunc的区别：
+          touchSatrtFunc使用的是evt.touches[0]
+          touchEndFunc使用的是evt.changedTouches[0]
+        */
+        let touch = evt.changedTouches[0]; //获取第一个触点
+        let endX = Number(touch.pageX); //页面触点X坐标
+        let endY = Number(touch.pageY); //页面触点Y坐标
+        //判断滑动方向
+        let deltaX = endX - startX;
+        let deltaY = endY - startY;
+        if (Math.abs(deltaX) >= Math.abs(deltaY) && Math.abs(deltaX) > slideLength) {
+          if (deltaX > 0) {
+            moveDirection(evt, moveRight);
+          } else {
+            moveDirection(evt, moveLeft);
+          }
+        } else if (Math.abs(deltaX) < Math.abs(deltaY) && Math.abs(deltaY) > slideLength) {
+          if (deltaY > 0) {
+            moveDirection(evt, moveDown);
+          } else {
+            moveDirection(evt, moveUp);
+          }
+        }
+      } catch (e) {
+        //alert('touchMoveFunc：' + e.message);
+      }
+    }
+
+    //绑定移动端滑动操作
+    function bindTouchMove() {
+      document.addEventListener('touchstart', touchSatrtFunc, false);
+      document.addEventListener('touchmove', touchMoveFunc, false);
+      document.addEventListener('touchend', touchEndFunc, false);
     }
     //绑定事件
     function bindEvents() {
       bindRestart();
       bindKeyEvent();
+      bindTouchMove();
       bindUnload();
     }
     //主函数
