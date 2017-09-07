@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <style media="screen">
+    p {
+      color:red;
+    }
+  </style>
+  <title>compare test</title>
+</head>
+
+<body>
+  <div>
+    段落1 <input type="text" id="source" value='{"id":1,"zip":"","default":true,"area":"海淀区","address":"清华科技园创业大厦","name":"麻花疼","province":"北京市","mobile":"15657568854","city":"北京市"}'>
+    <p id="so"></p>
+  </div>
+  <div>
+    段落2 <input type="text" id="target" value='{"result":[{"area":"海淀区","zip":"","default":true,"address":"清华科技园创业大厦","province":"北京市","city":"北京市","mobile":"15657568854","name":"麻花疼","id":1}'>
+    <p id="ta"></p>
+  </div>
+  <button id="submit" onclick="com()">点击</button>
+  <script src="compare2.js" type="text/javascript"></script>
+
+</body>
+
+</html>
