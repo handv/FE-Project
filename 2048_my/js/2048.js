@@ -287,6 +287,7 @@ function move(arr, direction) {
   delete nonZeroArr;
   //展示目前得分
   $('.curScore').val(getCurScore())
+  saveBestScore();
   arr.lastDir = direction;
   return arr;
 }
@@ -442,9 +443,10 @@ function touchEndFunc(evt) {
 
 //绑定移动端滑动操作
 function bindTouchMove() {
-  document.addEventListener('touchstart', touchSatrtFunc, false);
-  document.addEventListener('touchmove', touchMoveFunc, false);
-  document.addEventListener('touchend', touchEndFunc, false);
+  var table = document.getElementsByClassName('table')[0];
+  table .addEventListener('touchstart', touchSatrtFunc, false);
+  table .addEventListener('touchmove', touchMoveFunc, false);
+  table .addEventListener('touchend', touchEndFunc, false);
 }
 //绑定事件
 function bindEvents() {

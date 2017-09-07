@@ -34,20 +34,14 @@ header {
 header .left {
   position: absolute;
   left: 0;
-}
-
-header #restartBtn {
-  border: none;
   background: #8F7A66;
+  text-align: center;
   border-radius: 3px;
   padding: 0 20px;
-  text-decoration: none;
-  color: #F9F6F2;
   height: 40px;
   line-height: 42px;
-  text-align: center;
-  font-weight: bolder;
   outline: none;
+  font-weight: bolder;
 }
 
 header .right {
